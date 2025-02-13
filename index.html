@@ -72,9 +72,7 @@
         reader.onloadend = () => {
           const dataUrl = reader.result;
           const base64Data = dataUrl.split(",")[1];
-          // Using CORS Anywhere proxy to bypass CORS issues
-          const proxyUrl = "https://thingproxy.freeboard.io/fetch/";
-          const targetUrl = "https://ydg6t2jwi7365itksqdfat7za40qztaw.lambda-url.ap-south-1.on.aws/";
+          const targetUrl = "https://zl77aqpwm5yvlrocwtw4c5nc7y0xxkco.lambda-url.ap-south-1.on.aws/";
           fetch(proxyUrl + targetUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
