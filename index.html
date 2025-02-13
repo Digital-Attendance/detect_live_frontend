@@ -72,7 +72,10 @@
         reader.onloadend = () => {
           const dataUrl = reader.result;
           const base64Data = dataUrl.split(",")[1];
-          fetch("https://ydg6t2jwi7365itksqdfat7za40qztaw.lambda-url.ap-south-1.on.aws/", {
+          // Using CORS Anywhere proxy to bypass CORS issues
+          const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+          const targetUrl = "https://ydg6t2jwi7365itksqdfat7za40qztaw.lambda-url.ap-south-1.on.aws/";
+          fetch(proxyUrl + targetUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image: base64Data })
