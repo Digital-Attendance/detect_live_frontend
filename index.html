@@ -6,33 +6,220 @@
   <title>Check Your Liveness</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    /* Reset and base styles */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100vw; height: 100vh; overflow: hidden; font-family: 'Poppins', sans-serif; }
-    body { background: linear-gradient(135deg, #0d0d0d, #1a1a1a); display: flex; justify-content: center; align-items: center; }
-    .outer-container { display: flex; gap: 60px; width: 90vw; height: 90vh; }
-    .capture-container { flex: 0 0 40%; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); transition: transform 0.3s ease; }
+    body { 
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+    }
+    
+    /* Main container styles */
+    .outer-container {
+      display: flex;
+      gap: 60px;
+      width: 90vw;
+      height: 90vh;
+    }
+    
+    .capture-container, .history-container {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      transition: transform 0.3s ease;
+    }
+    
+    .capture-container {
+      flex: 0 0 40%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
     .capture-container:hover { transform: translateY(-5px); }
-    .capture-container .header { font-size: 32px; font-weight: 700; color: #ddd; margin-bottom: 20px; text-transform: lowercase; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-    .camera-container { width: 360px; height: 480px; background: #000; border: 3px solid #fff; border-radius: 10px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,255,255,0.3); }
-    .camera-container video { width: 100%; height: 100%; object-fit: cover; }
-    #capture { padding: 15px 30px; background: #fff; color: #000; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 0 10px #fff; }
+    
+    .capture-container .header {
+      font-size: 32px;
+      font-weight: 700;
+      color: #ddd;
+      margin-bottom: 20px;
+      text-transform: lowercase;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    
+    .camera-container {
+      width: 360px;
+      height: 480px;
+      background: #000;
+      border: 3px solid #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+    
+    .camera-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    #capture {
+      padding: 15px 30px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 10px #fff;
+    }
+    
     #capture:hover { transform: translateY(-3px); box-shadow: 0 0 20px #fff; }
-    #result { margin-top: 20px; font-size: 20px; color: #fff; font-weight: 600; text-shadow: 0 0 8px #fff; }
-    .history-container { flex: 0 0 50%; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.7); transition: transform 0.3s ease; }
+    
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 0 0 8px #fff;
+    }
+    
+    .history-container {
+      flex: 0 0 50%;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+    
     .history-container:hover { transform: translateY(-5px); }
-    .history-container .header { font-size: 28px; font-weight: 700; color: #ddd; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,255,255,0.3); text-align: center; }
-    .history-list { flex: 1; width: 100%; overflow-y: auto; padding: 0 20px; margin-bottom: 20px; }
-    .history-item { display: flex; align-items: center; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid transparent; transition: transform 0.3s, box-shadow 0.3s; }
-    .history-item:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
-    .history-item img { width: 60px; height: 80px; object-fit: cover; border-radius: 5px; margin-right: 15px; box-shadow: 0 0 10px #fff; }
-    .history-item p { font-size: 18px; color: #ccc; font-weight: 600; }
-    .green-border { border-color: #00ff00; box-shadow: 0 0 10px #00ff00; }
-    .red-border { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
-    #clearHistory { padding: 15px; background: #333; color: #fff; border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 0 10px #fff; }
+    
+    .history-container .header {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ddd;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+      text-align: center;
+    }
+    
+    .history-list {
+      flex: 1;
+      width: 100%;
+      overflow-y: auto;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+    
+    .history-item {
+      display: flex;
+      align-items: center;
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 2px solid transparent;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .history-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    }
+    
+    .history-item img {
+      width: 60px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 15px;
+      box-shadow: 0 0 10px #fff;
+    }
+    
+    .history-item p {
+      font-size: 18px;
+      color: #ccc;
+      font-weight: 600;
+    }
+    
+    .green-border {
+      border-color: #00ff00;
+      box-shadow: 0 0 10px #00ff00;
+    }
+    
+    .red-border {
+      border-color: #ff0000;
+      box-shadow: 0 0 10px #ff0000;
+    }
+    
+    #clearHistory {
+      padding: 15px;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 10px #fff;
+    }
+    
     #clearHistory:hover { transform: translateY(-3px); box-shadow: 0 0 20px #fff; }
+    
+    /* Custom scrollbar styles for history list */
     .history-list::-webkit-scrollbar { width: 8px; }
     .history-list::-webkit-scrollbar-track { background: #121212; border-radius: 10px; }
     .history-list::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      html, body {
+        overflow-y: auto;
+      }
+      
+      .outer-container {
+        flex-direction: column;
+        gap: 20px;
+        width: 95vw;
+        height: auto;
+        padding: 20px;
+      }
+      
+      .capture-container, .history-container {
+        flex: 1 1 100%;
+        width: 100%;
+        margin: 0 auto;
+      }
+      
+      .camera-container {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+      }
+      
+      .camera-container video {
+        width: 100%;
+        height: auto;
+      }
+      
+      .capture-container .header {
+        font-size: 28px;
+        text-align: center;
+      }
+      
+      .history-container .header {
+        font-size: 24px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -60,9 +247,11 @@
     const historyContainer = document.getElementById("history");
     const clearHistoryBtn = document.getElementById("clearHistory");
     let history = JSON.parse(localStorage.getItem("captureHistory")) || [];
+
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => { video.srcObject = stream; })
       .catch(err => { console.error("Error accessing webcam:", err); });
+
     captureBtn.addEventListener("click", () => {
       const context = canvas.getContext("2d");
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -86,6 +275,7 @@
         };
       }, "image/jpeg");
     });
+
     function addToHistory(blob, data) {
       if (history.length >= 10) history.shift();
       const reader = new FileReader();
@@ -96,6 +286,7 @@
       };
       reader.readAsDataURL(blob);
     }
+
     function updateHistoryUI() {
       historyContainer.innerHTML = "";
       history.forEach(item => {
@@ -111,11 +302,13 @@
         historyContainer.appendChild(div);
       });
     }
+
     clearHistoryBtn.addEventListener("click", () => {
       history = [];
       localStorage.removeItem("captureHistory");
       updateHistoryUI();
     });
+
     document.addEventListener("DOMContentLoaded", updateHistoryUI);
   </script>
 </body>
